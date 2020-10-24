@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-login',
@@ -12,10 +13,17 @@ export class LoginComponent implements OnInit {
 
   userName: string;
 
-  
-  constructor() { }
+  @Output()
+  loginOk: EventEmitter<string> = new EventEmitter();
+
+  constructor(readonly userService: UserService) { }
 
   ngOnInit(): void {
   }
 
+  login(e) {
+    this.userService.login(this.userName).subscribe(i => {
+      this.loginOk.emit(i);
+    })
+  }
 }

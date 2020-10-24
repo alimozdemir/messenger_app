@@ -10,6 +10,7 @@
     [(visible)]="popupVisible">
     <div *dxTemplate="let data of 'content'">
         <dx-text-box [(value)]="userName"></dx-text-box>
+        <dx-button (onClick)="login($event)">Login</dx-button>
     </div>
 </dx-popup>
 </div>

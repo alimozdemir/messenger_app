@@ -33,7 +33,7 @@ namespace messenger_api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<IEnumerable<User>>> Post([FromBody] Login model)
+        public async Task<ActionResult<string>> Post([FromBody] Login model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

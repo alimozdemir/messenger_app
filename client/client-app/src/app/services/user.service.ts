@@ -11,6 +11,6 @@ export class UserService {
   }
 
   login(userName: string) {
-        return this.http.post<number>('http://localhost:5000/api/user', { userName: userName })
+        return this.http.post<string>('http://localhost:5000/api/user', { userName: userName })
   }
 }

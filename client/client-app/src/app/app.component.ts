@@ -12,7 +12,9 @@ export class AppComponent {
 
   ngOnInit() {
     this.loginVisible = true;
+  }
 
-    
+  loginOk(user: string) {
+    this.userId = user;
   }
 }
