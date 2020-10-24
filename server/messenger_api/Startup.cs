@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -11,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 namespace messenger_api
 {
@@ -28,12 +31,45 @@ namespace messenger_api
         {
             services.AddSwaggerGen();
 
+            #region JWT & Identity
+            var jwtSettings = new JwtSettings();
+            Configuration.Bind("JwtSettings", jwtSettings);
+
+            services.AddSingleton(jwtSettings);
+            services.AddTransient<JwtTokenCreator>();
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                     .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddDefaultTokenProviders();
+
+
+
+            services.AddAuthentication(i =>
+                        {
+                            i.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                            i.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                            i.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                            i.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                        })
+                            .AddJwtBearer(options =>
+                            {
+                                options.TokenValidationParameters = new TokenValidationParameters
+                                {
+                                    ValidateIssuer = true,
+                                    ValidateAudience = true,
+                                    ValidateLifetime = true,
+                                    ValidateIssuerSigningKey = true,
+                                    ValidIssuer = jwtSettings.Issuer,
+                                    ValidAudience = jwtSettings.Audience,
+                                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
+                                    ClockSkew = jwtSettings.Expire
+                                };
+                            });
+
+            #endregion
 
             services.AddControllers();
         }
