@@ -14,6 +14,19 @@ services:
     networks:
       - svcnw
 
+  messenger:
+    image: messenger
+    restart: always
+    build:
+      context: .
+      dockerfile: ./messenger_api/Dockerfile
+    ports:
+      - '5005:80'
+    networks:
+      - svcnw
+    depends_on:
+      - postgresql
+
 volumes:
   pgdata:
  
