@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 namespace messenger_api
 {
@@ -30,7 +31,20 @@ namespace messenger_api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(c => {
+                c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme() { 
+                    In = ParameterLocation.Header, Scheme = "bearer", BearerFormat = "JWT", Name = "Authorization", Type=Microsoft.OpenApi.Models.SecuritySchemeType.Http });
+                
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme {
+                            Reference = new OpenApiReference() { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+                        },
+                        new List<string>()
+                    }
+                });
+            });
 
             #region JWT & Identity
             var jwtSettings = new JwtSettings();

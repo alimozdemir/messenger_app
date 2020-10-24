@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using messenger_api.Models.DTOs;
 using messenger_api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -11,6 +12,7 @@ namespace messenger_api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class MessageController : ControllerBase
     {
         private readonly ILogger<MessageController> _logger;
