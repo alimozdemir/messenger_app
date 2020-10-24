@@ -10,7 +10,7 @@ namespace messenger_api.Services
     public interface IMessageService
     {
         Task<int> AddAsync(string fromUserId, string toUserId, string text);
-        Task<IEnumerable<UserMessage>> GetAllMessages(string fromUserId, string toUserId);
+        Task<IEnumerable<UserMessage>> GetAllMessagesAsync(string fromUserId, string toUserId);
     }
 
     public class MessageService : IMessageService
@@ -37,7 +37,7 @@ namespace messenger_api.Services
             return message.Id;
         }
 
-        public async Task<IEnumerable<UserMessage>> GetAllMessages(string fromUserId, string toUserId)
+        public async Task<IEnumerable<UserMessage>> GetAllMessagesAsync(string fromUserId, string toUserId)
         {
             return await _context.UserMessages.Where(i => i.FromUserId == fromUserId && i.ToUserId == toUserId).OrderBy(i => i.SendTime).ToListAsync();
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using messenger_api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -68,6 +69,13 @@ namespace messenger_api
                                     ClockSkew = jwtSettings.Expire
                                 };
                             });
+
+            #endregion
+
+            #region Services
+
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IMessageService, MessageService>();
 
             #endregion
 
