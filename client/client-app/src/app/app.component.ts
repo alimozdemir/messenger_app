@@ -6,5 +6,13 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  
+  loginVisible: boolean;
+
+  userId: string;
+
+  ngOnInit() {
+    this.loginVisible = true;
+
+    
+  }
 }

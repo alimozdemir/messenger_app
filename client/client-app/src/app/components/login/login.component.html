@@ -1,0 +1,15 @@
+
+<div>
+    <dx-popup
+    [width]="300"
+    [height]="250"
+    [showTitle]="true"
+    title="Information"
+    [dragEnabled]="false"
+    [closeOnOutsideClick]="true"
+    [(visible)]="popupVisible">
+    <div *dxTemplate="let data of 'content'">
+        <dx-text-box [(value)]="userName"></dx-text-box>
+    </div>
+</dx-popup>
+</div>
