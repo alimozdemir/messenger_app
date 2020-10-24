@@ -82,6 +82,16 @@ namespace messenger_api
                                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
                                     ClockSkew = jwtSettings.Expire
                                 };
+                                options.Events.OnMessageReceived = context => {
+
+                                    // for signalr hub
+                                    if (context.Request.Query.TryGetValue("access_token", out var token))
+                                    {
+                                        context.Token = token;
+                                    }
+
+                                    return Task.CompletedTask;
+                                };
                             });
 
             #endregion
@@ -122,7 +132,9 @@ namespace messenger_api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<ChatHub>("/chathub");
+                endpoints.MapHub<ChatHub>("/chathub", options => {
+                    options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets;
+                });
             });
 
         }
