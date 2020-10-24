@@ -1,24 +1,34 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace messenger_api.Services
 {
-    public class UserService
+    public interface IUserService
+    {
+        Task<string> LoginAsync(string userName);
+        Task<IEnumerable<ApplicationUser>> UsersAsync();
+    }
+
+    public class UserService : IUserService
     {
         private readonly JwtTokenCreator _jwtCreator;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ApplicationDbContext _context;
 
-        public UserService(JwtTokenCreator jwtCreator, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public UserService(JwtTokenCreator jwtCreator, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ApplicationDbContext context)
         {
             _jwtCreator = jwtCreator;
             _userManager = userManager;
             _signInManager = signInManager;
+            _context = context;
         }
-        public async Task<ApplicationUser> CreateUser(string userName)
+        private async Task<ApplicationUser> CreateUserAsync(string userName)
         {
             var result = await _userManager.CreateAsync(new ApplicationUser() { Email = userName, UserName = userName }, userName);
-            
+
             if (result.Succeeded)
             {
                 return await _userManager.FindByEmailAsync(userName);
@@ -27,13 +37,13 @@ namespace messenger_api.Services
             return null;
         }
 
-        public async Task<string> Login(string userName)
+        public async Task<string> LoginAsync(string userName)
         {
             var user = await _userManager.FindByEmailAsync(userName);
 
             if (user == null)
             {
-                user = await CreateUser(userName);
+                user = await CreateUserAsync(userName);
 
                 if (user == null)
                     throw new System.Exception("User can't be created.");
@@ -41,6 +51,11 @@ namespace messenger_api.Services
 
 
             return _jwtCreator.Generate(userName, user.Id);
+        }
+
+        public async Task<IEnumerable<ApplicationUser>> UsersAsync()
+        {
+            return await _context.Users.ToListAsync();
         }
     }
 
