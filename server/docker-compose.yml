@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+  postgresql:
+    image: 'bitnami/postgresql:latest'
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRESQL_USERNAME=messenger
+      - POSTGRESQL_PASSWORD=messenger12345
+      - POSTGRESQL_DATABASE=messenger
+    volumes:
+      - pgdata:/bitnami
+    networks:
+      - svcnw
+
+volumes:
+  pgdata:
+ 
+networks:
+  svcnw:
+    driver: bridge
