@@ -12,7 +12,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 COPY ./ /src
 WORKDIR /src
 
-RUN dotnet restore "messenger_api/messenger_api.csproj"
+RUN dotnet restore "messenger_api/messenger_api.csproj" /p:EnableDefaultItems=false
 RUN dotnet build "messenger_api/messenger_api.csproj" -c Release -o /app
 
 # Rename the image as publish
