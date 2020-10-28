@@ -3,7 +3,7 @@ A basic implementation of a messenger app with backend and frontend
 
 # How to build and start
 
-Use two seperated terminal.
+Use two seperate terminal.
 
 Backend
 ```
@@ -18,7 +18,9 @@ yarn install
 yarn start
 ```
 
-You have to use minimum 6 character of user name. You just type the username and enter the messenger.
+Open the browser and enter to http://localhost:4200
+
+You have to use minimum 6 character for the username. You just need to type the username and enter the messenger.
 
 # What is supported
 
