@@ -15,6 +15,9 @@ WORKDIR /src
 RUN dotnet restore "messenger_api/messenger_api.csproj" /p:EnableDefaultItems=false
 RUN dotnet build "messenger_api/messenger_api.csproj" -c Release -o /app
 
+RUN chmod +x ./messenger_api/entrypoint.sh
+CMD /bin/bash ./messenger_api/entrypoint.sh
+
 # Rename the image as publish
 FROM build AS publish
 RUN dotnet publish "messenger_api/messenger_api.csproj" -c Release -o /out
