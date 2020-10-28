@@ -14,7 +14,7 @@ export class LoginComponent implements OnInit {
   userName: string;
 
   @Output()
-  loginOk: EventEmitter<string> = new EventEmitter();
+  loginOk: EventEmitter<any> = new EventEmitter();
 
   constructor(readonly userService: UserService) { }
 
@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit {
 
   login(e) {
     this.userService.login(this.userName).subscribe(i => {
-      this.loginOk.emit(i);
+      this.loginOk.emit({ token: i, userName: this.userName});
     })
   }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,19 +28,20 @@ namespace messenger_api.Services
         }
         private async Task<ApplicationUser> CreateUserAsync(string userName)
         {
-            var result = await _userManager.CreateAsync(new ApplicationUser() { Email = userName, UserName = userName }, userName);
+            var result = await _userManager.CreateAsync(new ApplicationUser() { Email = "1@1.com", UserName = userName }, userName);
 
             if (result.Succeeded)
             {
-                return await _userManager.FindByEmailAsync(userName);
+                return await _userManager.FindByNameAsync(userName);
             }
 
-            return null;
+            throw new System.Exception(string.Join(",", result.Errors.Select(i => i.Description)));
+
         }
 
         public async Task<string> LoginAsync(string userName)
         {
-            var user = await _userManager.FindByEmailAsync(userName);
+            var user = await _userManager.FindByNameAsync(userName);
 
             if (user == null)
             {

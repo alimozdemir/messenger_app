@@ -82,8 +82,9 @@ namespace messenger_api
                                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
                                     ClockSkew = jwtSettings.Expire
                                 };
+                                options.Events = new JwtBearerEvents();
                                 options.Events.OnMessageReceived = context => {
-
+                                    
                                     // for signalr hub
                                     if (context.Request.Query.TryGetValue("access_token", out var token))
                                     {
@@ -93,7 +94,27 @@ namespace messenger_api
                                     return Task.CompletedTask;
                                 };
                             });
+            services.Configure<IdentityOptions>(options =>
+                        {
+                            // Password settings.
+                            options.Password.RequireDigit = false;
+                            options.Password.RequireLowercase = false;
+                            options.Password.RequireNonAlphanumeric = false;
+                            options.Password.RequireUppercase = false;
+                            options.Password.RequiredLength = 6;
+                            options.Password.RequiredUniqueChars = 1;
 
+                            options.User.RequireUniqueEmail = false;
+
+                            // Lockout settings.
+                            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                            options.Lockout.MaxFailedAccessAttempts = 5;
+                            options.Lockout.AllowedForNewUsers = true;
+
+                            // User settings.
+                            options.User.AllowedUserNameCharacters =
+                            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                        });
             #endregion
 
             #region Services
@@ -106,6 +127,15 @@ namespace messenger_api
             services.AddControllers();
 
             services.AddSignalR();
+
+            services.AddCors(options =>
+               {
+                   options.AddPolicy("CorsPolicy",
+                       builder => builder.WithOrigins("https://localhost:5001", "http://localhost:4200")
+                       .AllowAnyMethod()
+                       .AllowCredentials()
+                       .AllowAnyHeader());
+               });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -126,6 +156,8 @@ namespace messenger_api
             }
 
             app.UseRouting();
+
+            app.UseCors("CorsPolicy");
 
             app.UseAuthorization();
 

@@ -7,10 +7,10 @@ export class UserService {
   constructor(private http: HttpClient) { }
 
   getUsers() {
-      return this.http.get<Array<user>>('http://localhost:5000/api/user')
+      return this.http.get<Array<user>>('http://localhost:5000/user')
   }
 
   login(userName: string) {
-        return this.http.post<string>('http://localhost:5000/api/user', { userName: userName })
+        return this.http.post('http://localhost:5000/user', { userName: userName }, { responseType: 'text' })
   }
 }

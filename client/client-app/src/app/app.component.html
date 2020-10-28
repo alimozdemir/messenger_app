@@ -1,13 +1,30 @@
 <div class="container">
   <div class="row">
     <div class="col-3">
-      <dx-list></dx-list>
+      <dx-list [dataSource]="users" keyExpr="id" selectionMode="single" height="100%" displayExpr="userName" [(selectedItemKeys)]="activeUserId" (onSelectionChanged)="loadMessages()"></dx-list>
     </div>
     <div class="col-9">
-      {{ userId }}
+      <div class="chat-container">
+        <p>Messages</p>
+
+        <div #chat class="chat" >
+          <ul>
+              <li *ngFor="let item of messages" [class.receive]="item.fromUserId !== this.userId" [class.send]="item.fromUserId === this.userId">
+                  <div class="msg">
+                      <span> {{getUserName(item.fromUserId)}} : </span>
+                      {{item.text}}
+                  </div>
+              </li>
+          </ul>
+      </div>
+
+        <dx-text-box [(value)]="text" [disabled]="!activeUserId" (onEnterKey)="send()"></dx-text-box>
+        <dx-button (onClick)="send()" [disabled]="!activeUserId"> Send</dx-button>
+      </div>
+
     </div>
   </div>
 
 </div>
 
-<app-login [popupVisible]="loginVisible" ()></app-login>
+<app-login [popupVisible]="loginVisible" (loginOk)="loginOk($event)"></app-login>
