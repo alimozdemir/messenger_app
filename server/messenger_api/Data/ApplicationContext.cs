@@ -6,7 +6,13 @@ namespace messenger_api
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<UserMessage> UserMessages { get; set; }
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { 
+
+            if (!this.Database.EnsureCreated())
+            {
+                this.Database.Migrate();
+            }
+        }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
