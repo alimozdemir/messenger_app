@@ -22,6 +22,8 @@ Open the browser and enter to http://localhost:4200
 
 You have to use minimum 6 character for the username. You just need to type the username and enter the messenger.
 
+![Screen1](assets/screen1.png)
+
 # What is supported
 
 ## Backend
