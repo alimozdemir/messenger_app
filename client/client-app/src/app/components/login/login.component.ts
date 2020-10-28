@@ -22,6 +22,11 @@ export class LoginComponent implements OnInit {
   }
 
   login(e) {
+    if (this.userName?.length < 6) {
+      alert('Username must be higher than 6 characters.');
+      return;
+    }
+
     this.userService.login(this.userName).subscribe(i => {
       this.loginOk.emit({ token: i, userName: this.userName});
     })

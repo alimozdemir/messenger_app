@@ -8,10 +8,7 @@ namespace messenger_api
         public DbSet<UserMessage> UserMessages { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { 
 
-            if (!this.Database.EnsureCreated())
-            {
-                this.Database.Migrate();
-            }
+            //this.Database.Migrate();
         }
 
 

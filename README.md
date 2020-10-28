@@ -1,10 +1,28 @@
 # messenger_app
 A basic implementation of a messenger app with backend and frontend
 
+# How to build and start
 
-# Todo
+Use two seperated terminal.
 
-## Backend
+Backend
+```
+cd server
+docker-compose up
+```
+
+Frontend
+```
+cd client/client-app
+yarn install
+yarn start
+```
+
+You have to use minimum 6 character of user name. You just type the username and enter the messenger.
+
+# What is supported
+
+## Backend
 
 1. dotnet core 3.1 web api
 2. Swagger support
@@ -12,13 +30,8 @@ A basic implementation of a messenger app with backend and frontend
 4. Dockerize
 5. Real time communication with SignalR
 
-
-## Frontend
+## Frontend
 
 1. Angular with (material/devextreme/ant-design)
 2. SignalR support
-
-## If time remains
-
-1. Online/offline support
-2. Search support (PostgreSQL Full Text Search)
+3. Real-time communication

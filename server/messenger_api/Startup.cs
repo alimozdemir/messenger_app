@@ -131,10 +131,10 @@ namespace messenger_api
             services.AddCors(options =>
                {
                    options.AddPolicy("CorsPolicy",
-                       builder => builder.WithOrigins("https://localhost:5001", "http://localhost:4200")
+                       builder => builder.SetIsOriginAllowed(_ => true)
                        .AllowAnyMethod()
-                       .AllowCredentials()
-                       .AllowAnyHeader());
+                       .AllowAnyHeader()
+                       .AllowCredentials());
                });
         }
 
@@ -155,10 +155,10 @@ namespace messenger_api
             {
                 app.UseDeveloperExceptionPage();
             }
+            
+            app.UseCors("CorsPolicy");
 
             app.UseRouting();
-
-            app.UseCors("CorsPolicy");
 
             app.UseAuthorization();
 
