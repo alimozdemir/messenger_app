@@ -16,8 +16,8 @@
                 <li *ngFor="let item of messages" [class.receive]="item.fromUserId !== this.userId" [class.send]="item.fromUserId === this.userId">
                     <div class="msg">
                         <span> {{getUserName(item.fromUserId)}} : </span>
-                        {{item.text}}
-                    </div>
+                        {{ item.text }}
+                    </div>  
                 </li>
             </ul>
         </div>
