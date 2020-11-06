@@ -11,11 +11,14 @@ import { DxPopupModule } from 'devextreme-angular/ui/popup';
 import { MessageService } from './services/message.service';
 import { UserService } from './services/user.service';
 import { HttpClientModule } from '@angular/common/http';
+import { ChatComponent } from './components/chat/chat.component';
+import { HubService } from './services/hub.service';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    ChatComponent
   ],
   imports: [
     BrowserModule,
@@ -26,7 +29,7 @@ import { HttpClientModule } from '@angular/common/http';
     DxTextBoxModule,
     DxPopupModule
   ],
-  providers: [UserService, MessageService],
+  providers: [UserService, MessageService, HubService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

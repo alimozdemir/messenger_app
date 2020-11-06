@@ -1,0 +1,19 @@
+<div class="chat-container">
+    <div #chat class="chat">
+        <ul>
+            <li *ngFor="let item of messages" [class.receive]="item.fromUserId === this.receiver"
+                [class.send]="item.fromUserId === this.sender">
+                <div class="msg">
+                    <span> {{(item.fromUserId)}} : </span>
+                    {{ item.text }}
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="mt-2">
+
+        <dx-text-box [(value)]="text" [disabled]="disabled" (onEnterKey)="send()"></dx-text-box>
+        <dx-button (onClick)="send()" [disabled]="disabled"> Send</dx-button>
+    </div>
+</div>

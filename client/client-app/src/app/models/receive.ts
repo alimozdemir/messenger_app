@@ -1,0 +1,1 @@
+export interface receive { fromUserId: string, text: string, messageId: number }

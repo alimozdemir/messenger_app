@@ -5,6 +5,9 @@ import { MessageService } from './services/message.service';
 import { UserService } from './services/user.service';
 import { map } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
+import { HubService } from './services/hub.service';
+import { ChatComponent } from './components/chat/chat.component';
+import { receive } from './models/receive';
 
 @Component({
   selector: 'app-root',
@@ -18,32 +21,35 @@ export class AppComponent {
   userName: string;
 
   token: string;
-  connection: signalR.HubConnection;
 
   activeUserId: any;
+  receiverId: string;
   text: string;
 
-  messages: userMessage[] = [];
+  currentMessages: userMessage[] = [];
   users: user[] = [];
   
-  @ViewChild('chat') private myChatContainer: ElementRef;
+  messageContainer: Map<string, userMessage[]> = new Map<string, userMessage[]>();
+
+  @ViewChild(ChatComponent) private chatComponent: ChatComponent;
   
-  constructor(readonly userService: UserService, readonly messageService: MessageService) {
+  constructor(readonly userService: UserService, readonly messageService: MessageService, readonly hubService: HubService) {
     
   }
 
   ngOnInit() {
     this.loginVisible = true;
+    this.hubService.receiveMessage.subscribe(i => this.receiveMessage(i));
   }
 
   async loginOk(payload: any) {
     this.loginVisible = false;
     this.token = payload.token;
     this.userName = payload.userName;
-
+    
     this.loadUsers();
 
-    this.setupSignalR();
+    this.hubService.setupSignalR(payload.token);
   }
 
   loadUsers() {
@@ -67,42 +73,20 @@ export class AppComponent {
     throw Error('User is not found ' + userId);
   }
 
-  async setupSignalR() {
-
-    const builder = new signalR.HubConnectionBuilder();
-    const connection = builder.withUrl('http://localhost:5000/chathub', { accessTokenFactory: () => this.token }).build();
-
-    await connection.start();
-
-    this.connection = connection;
-
-    connection.on('ReceiveMessage', this.receiveMessage.bind(this));
-  }
-
-  receiveMessage(fromUserId: string, text: string, message: number) {
-    this.messages.push({ text: text, fromUserId: fromUserId, toUserId: this.userId,  sendTime: new Date() });
-    this.toBottom();
-  }
-
-  send() {
-    const activeUser =this.activeUserId[0];
-    this.connection.send('SendMessage', this.userId, activeUser, this.text);
-    this.messages.push({ fromUserId: this.userId, toUserId: activeUser, sendTime: new Date(), text: this.text });
-
-    this.text = '';
-    this.toBottom();
-
-  }
-
-  toBottom() {
-    // we should handle it on the next tick.
-    setTimeout(() => {
-      this.myChatContainer.nativeElement.scrollTop = this.myChatContainer.nativeElement.scrollHeight;
-    })
+  receiveMessage(payload: receive) {
+    // if it is current selected user then push the message into currentMessages
+    const currentContainer = this.messageContainer.get(payload.fromUserId);
+    currentContainer.push({ fromUserId: payload.fromUserId, text: payload.text, toUserId: this.userId, sendTime: new Date() })
   }
 
   loadMessages() {
     const activeUser = this.activeUserId[0];
+    this.receiverId = activeUser;
+
+    if (this.messageContainer.has(this.receiverId)) {
+      this.currentMessages = this.messageContainer.get(this.receiverId);
+      return;
+    }
 
     forkJoin(this.messageService.getMessages(this.userId, activeUser, this.token), 
       this.messageService.getMessages(activeUser, this.userId, this.token))
@@ -111,8 +95,8 @@ export class AppComponent {
     }))
     .subscribe(data => {
       data.forEach(i => i.sendTime = new Date(i.sendTime));
-      this.messages = data.sort((a, b) => a.sendTime.getTime() - b.sendTime.getTime());
-      this.toBottom();
+      this.currentMessages = data.sort((a, b) => a.sendTime.getTime() - b.sendTime.getTime());
+      this.messageContainer.set(activeUser, this.currentMessages);
     });
       
   }

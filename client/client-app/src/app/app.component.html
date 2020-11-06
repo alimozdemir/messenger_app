@@ -2,32 +2,15 @@
   <div class="row">
     <div class="col-3">
       <h2>User List</h2>
-      <dx-list [dataSource]="users" keyExpr="id" selectionMode="single" height="100%" displayExpr="userName" [(selectedItemKeys)]="activeUserId" (onSelectionChanged)="loadMessages()"></dx-list>
+      <dx-list [dataSource]="users" keyExpr="id" selectionMode="single" height="100%" displayExpr="userName"
+        [(selectedItemKeys)]="activeUserId" (onSelectionChanged)="loadMessages()"></dx-list>
     </div>
     <div class="col-9">
-      <div class="chat-container">
-        <div class="d-flex">
-          <div class="p-2">Messages</div>
-          <div class="ml-auto userName">{{ userName }}</div>
-        </div>
-
-          <div #chat class="chat" >
-            <ul>
-                <li *ngFor="let item of messages" [class.receive]="item.fromUserId !== this.userId" [class.send]="item.fromUserId === this.userId">
-                    <div class="msg">
-                        <span> {{getUserName(item.fromUserId)}} : </span>
-                        {{ item.text }}
-                    </div>  
-                </li>
-            </ul>
-        </div>
-
-        <div class="mt-2">
-
-          <dx-text-box [(value)]="text" [disabled]="!activeUserId" (onEnterKey)="send()"></dx-text-box>
-          <dx-button (onClick)="send()" [disabled]="!activeUserId"> Send</dx-button>
-        </div>
+      <div class="d-flex">
+        <div class="p-2">Messages</div>
+        <div class="ml-auto userName">{{ userName }}</div>
       </div>
+      <app-chat [receiver]="this.receiverId" [sender]="this.userId" [messages]="currentMessages" [disabled]="!activeUserId"></app-chat>
 
     </div>
   </div>
