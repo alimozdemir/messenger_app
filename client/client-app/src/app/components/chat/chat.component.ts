@@ -50,8 +50,9 @@ export class ChatComponent implements OnInit {
 
   send() {
     this.hubService.send(this.sender, this.receiver, this.text);
-    this.messages.push({ fromUserId: this.sender, toUserId: this.receiver, sendTime: new Date(), text: this.text });
+    this.messages.push({ fromUserId: this.sender, toUserId: this.receiver, sendTime: new Date(), text: this.text, isRead: true });
     this.toBottom();
+    this.text = '';
   }
 
   private toBottom() {

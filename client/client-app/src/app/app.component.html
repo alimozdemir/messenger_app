@@ -3,7 +3,12 @@
     <div class="col-3">
       <h2>User List</h2>
       <dx-list [dataSource]="users" keyExpr="id" selectionMode="single" height="100%" displayExpr="userName"
-        [(selectedItemKeys)]="activeUserId" (onSelectionChanged)="loadMessages()"></dx-list>
+        [(selectedItemKeys)]="activeUserId" (onSelectionChanged)="loadMessages()">
+        <div *dxTemplate="let item of 'item'">
+          {{ item.userName }}
+          <span *ngIf="item.unreadCount > 0" class="unread">{{ item.unreadCount }}</span>
+        </div>
+      </dx-list>
     </div>
     <div class="col-9">
       <div class="d-flex">

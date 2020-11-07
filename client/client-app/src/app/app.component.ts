@@ -8,6 +8,7 @@ import { forkJoin } from 'rxjs';
 import { HubService } from './services/hub.service';
 import { ChatComponent } from './components/chat/chat.component';
 import { receive } from './models/receive';
+import { DxListComponent } from 'devextreme-angular/ui/list';
 
 @Component({
   selector: 'app-root',
@@ -32,6 +33,7 @@ export class AppComponent {
   messageContainer: Map<string, userMessage[]> = new Map<string, userMessage[]>();
 
   @ViewChild(ChatComponent) private chatComponent: ChatComponent;
+  @ViewChild(DxListComponent) private listComponent: DxListComponent;
   
   constructor(readonly userService: UserService, readonly messageService: MessageService, readonly hubService: HubService) {
     
@@ -54,6 +56,9 @@ export class AppComponent {
 
   loadUsers() {
     this.userService.getUsers().subscribe(users => {
+
+      users.forEach(i => i.unreadCount = 0);
+      
       const user = users.find(i => i.userName === this.userName);
       this.userId = user.id;
       const index = users.indexOf(user);
@@ -74,30 +79,55 @@ export class AppComponent {
   }
 
   receiveMessage(payload: receive) {
-    // if it is current selected user then push the message into currentMessages
-    const currentContainer = this.messageContainer.get(payload.fromUserId);
-    currentContainer.push({ fromUserId: payload.fromUserId, text: payload.text, toUserId: this.userId, sendTime: new Date() })
+    if (!this.messageContainer.has(payload.fromUserId)) {
+      this.loadMessageContainer(payload.fromUserId);
+    } else {
+      // if it is current selected user then push the message into currentMessages
+      const currentContainer = this.messageContainer.get(payload.fromUserId);
+      currentContainer.push({ fromUserId: payload.fromUserId, text: payload.text, toUserId: this.userId, sendTime: new Date(), isRead: this.receiverId === payload.fromUserId });
+    }
+
+    this.updateUserMessageCount(payload.fromUserId, false);
+
   }
 
   loadMessages() {
     const activeUser = this.activeUserId[0];
     this.receiverId = activeUser;
 
+    this.updateUserMessageCount(activeUser, true);
     if (this.messageContainer.has(this.receiverId)) {
       this.currentMessages = this.messageContainer.get(this.receiverId);
       return;
     }
 
-    forkJoin(this.messageService.getMessages(this.userId, activeUser, this.token), 
+    this.loadMessageContainer(activeUser, true);
+  }
+
+  private loadMessageContainer(activeUser: any, setCurrent: boolean = false) {
+    forkJoin(this.messageService.getMessages(this.userId, activeUser, this.token),
       this.messageService.getMessages(activeUser, this.userId, this.token))
-    .pipe(map(([first, second]) => {
-      return first.concat(second);
-    }))
-    .subscribe(data => {
-      data.forEach(i => i.sendTime = new Date(i.sendTime));
-      this.currentMessages = data.sort((a, b) => a.sendTime.getTime() - b.sendTime.getTime());
-      this.messageContainer.set(activeUser, this.currentMessages);
-    });
-      
+      .pipe(map(([first, second]) => {
+        return first.concat(second);
+      }))
+      .subscribe(data => {
+        data.forEach(i => i.sendTime = new Date(i.sendTime));
+        const currentMessages = data.sort((a, b) => a.sendTime.getTime() - b.sendTime.getTime());
+        if (setCurrent) {
+          this.currentMessages = currentMessages;
+        }
+        this.messageContainer.set(activeUser, currentMessages);
+      });
+  }
+
+  updateUserMessageCount(id: string, reset: boolean) {
+    const user = this.users.find(i => i.id === id);
+    if (reset)
+      user.unreadCount = 0;
+    else
+      user.unreadCount++;
+
+    console.log(id, user.unreadCount, reset)
+    this.listComponent.instance.repaint();
   }
 }

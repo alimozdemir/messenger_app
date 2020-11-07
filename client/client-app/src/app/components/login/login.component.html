@@ -2,7 +2,7 @@
     <dx-popup [width]="300" [height]="250" [showTitle]="true" title="Login Panel" [dragEnabled]="false"
         [closeOnOutsideClick]="false" [showCloseButton]="false" [(visible)]="popupVisible">
         <div *dxTemplate="let data of 'content'">
-            <dx-text-box [(value)]="userName" placeholder="Type an username"></dx-text-box>
+            <dx-text-box [(value)]="userName" placeholder="Type an username" (onEnterKey)="login($event)"></dx-text-box>
             <dx-button [type]="'default'" (onClick)="login($event)" [elementAttr]="{ class: 'login-button mt-2' }">Login</dx-button>
         </div>
     </dx-popup>
