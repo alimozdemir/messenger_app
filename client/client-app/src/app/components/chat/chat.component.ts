@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, IterableDiffers, OnInit, ViewChild } from '@angular/core';
 import { userMessage } from 'src/app/models/user';
 import { HubService } from 'src/app/services/hub.service';
 
@@ -24,12 +24,29 @@ export class ChatComponent implements OnInit {
   text: string;
 
   @ViewChild('chat') private myChatContainer: ElementRef;
+  iterableDiffer: any;
 
-  constructor(readonly hubService: HubService) { }
+  constructor(readonly hubService: HubService, iterableDiffers: IterableDiffers) { 
+    this.iterableDiffer = iterableDiffers.find([]).create(null);
+  }
 
   ngOnInit() {
 
   }
+
+  ngOnChanges(changes) {
+    if (changes.messages) {
+      this.toBottom();
+    }
+  }
+
+  ngDoCheck() {
+    let changes = this.iterableDiffer.diff(this.messages);
+    if (changes) {
+      this.toBottom();
+    }
+}
+
 
   send() {
     this.hubService.send(this.sender, this.receiver, this.text);

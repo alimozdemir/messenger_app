@@ -18,7 +18,7 @@ export class HubService {
         await connection.start();
 
         this.connection = connection;
-
+        
         connection.on('ReceiveMessage', (...args: any[]) => this.receiveMessage.next({ fromUserId: args[0], text: args[1], messageId: args[2]  } as receive));
     }
 
